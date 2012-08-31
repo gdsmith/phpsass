@@ -577,12 +577,14 @@ class SassScriptFunctions {
    */
   public static function scale_color($color, $red = 0, $green = 0, $blue = 0, $hue = 0, $saturation = 0, $lightness = 0, $alpha = 0) {
     $color->rgb2hsl();
-    foreach (array('red', 'green', 'blue', 'hue', 'saturation', 'lightness', 'alpha') as $i => $property) {
-      $obj = $$property;
-      $new = $color->$property + $color->$property * (0.01 * $obj->value);
-      $color->$property = $new;
+    foreach (array('red' => 255, 'green' => 255, 'blue' => 255, 'hue' => 360, 'saturation' => 100, 'lightness' => 100, 'alpha' => 1) as $property => $max_val) {
+      $current = $color->$property;
+      $scale = $$property->value / 100.0;
+      $diff = $scale > 0 ? ($max_val - $color->$property) : $color->$property;
+      $color->$property = $current + $diff * $scale;
     }
     $color->hsl2rgb();
+
     return $color;
   }
 
